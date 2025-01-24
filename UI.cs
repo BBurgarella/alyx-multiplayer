@@ -115,7 +115,7 @@ namespace alyx_multiplayer
 
         private void buttonLocalPort_Click(object sender, EventArgs e)
         {
-            string newServerPort = textBoxLocalPort.Text;
+            string newServerPort = textBoxServerPort.Text;
             if (newServerPort.Length <= 0)
             {
                 // do nothing
@@ -138,7 +138,7 @@ namespace alyx_multiplayer
 
         private void buttonPeerIP_Click(object sender, EventArgs e)
         {
-            string newClientIP = textBoxPeerIP.Text;
+            string newClientIP = textBoxClientIP.Text;
             if (newClientIP.Length <= 0)
             {
                 // do nothing
@@ -161,7 +161,7 @@ namespace alyx_multiplayer
 
         private void buttonPeerPort_Click(object sender, EventArgs e)
         {
-            string newClientPort = textBoxPeerPort.Text;
+            string newClientPort = textBoxClientPort.Text;
             if (newClientPort.Length <= 0)
             {
                 // do nothing
@@ -179,6 +179,25 @@ namespace alyx_multiplayer
             {
                 buttonPeerPort_Click(sender, e);
                 e.Handled = true;
+            }
+        }
+
+        private void checkBoxIsServer_CheckedChanged(object sender, EventArgs e)
+        {
+            Core.networkHandler.ReconfigureIsServer(checkBoxIsServer.Checked);
+        }
+
+        private void buttonServerIp_Click(object sender, EventArgs e)
+        {
+            string newServerIp = textBoxServerIp.Text;
+            if (newServerIp.Length <= 0)
+            {
+                // do nothing
+            }
+            else
+            {
+                Core.Log("Set local port to: " + newServerIp, false);
+                Core.networkHandler.ReconfigureServerIP(newServerIp);
             }
         }
     }

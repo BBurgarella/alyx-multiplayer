@@ -10,6 +10,7 @@ namespace alyx_multiplayer
         /// Constructor which attempts to start the client.
         /// </summary>
         private string ipPort;
+        private static string coords;
         private bool shouldShowPeerError = true;
         public SimpleTcpClient client;
         public NetworkClient(string ipPort)
@@ -28,7 +29,8 @@ namespace alyx_multiplayer
 
                 // Actually attempt a connection
                 client.Connect();
-            } catch
+            }
+            catch
             {
                 // For now, don't show a server failure message (since Core.Log may not be instantiated)
             }
@@ -43,7 +45,7 @@ namespace alyx_multiplayer
         }
 
         /// <summary>
-        /// Send any coordinates using SuperSimpleTcp's nifty implementation.
+        /// Send coordinates to the NetworkServer.
         /// </summary>
         /// <param name="coords">The coordinates to send.</param>
         public void Send(string coords)
@@ -52,14 +54,34 @@ namespace alyx_multiplayer
             {
                 client.Send(coords);
                 shouldShowPeerError = true;
-            } catch
+            }
+            catch
             {
                 if (shouldShowPeerError)
                 {
                     shouldShowPeerError = false;
                     Core.Log("Failed to send coords to peer! Are the IP and port set correctly?", false);
                 }
-            }            
+            }
+        }
+
+        /// <summary>
+        /// Event for when coordinate data is received from NetworkServer
+        /// </summary>
+        /// <param name="sender">Whoever sent us coordinates.</param>
+        /// <param name="e">Event arguments.</param>
+        static void DataReceived(object sender, DataReceivedEventArgs e)
+        {
+            coords = Encoding.UTF8.GetString(e.Data);
+        }
+
+        /// <summary>
+        /// Return the cached coordinates received earlier.
+        /// </summary>
+        /// <returns>Those pesky coordinates.</returns>
+        public string RetrieveCoords()
+        {
+            return coords;
         }
 
         /// <summary>
@@ -67,9 +89,9 @@ namespace alyx_multiplayer
         /// </summary>
         /// <param name="sender">The server we connected to.</param>
         /// <param name="e">Event arguments.</param>
-        static void Connected(object sender, EventArgs e)
+        static void Connected(object sender, ClientConnectedEventArgs e)
         {
-            Core.Log("*** Connected to peer", false);
+            Core.Log("*** Connected to the NetworkServer [" + e.IpPort + "] ", false);
         }
 
         /// <summary>
@@ -77,19 +99,9 @@ namespace alyx_multiplayer
         /// </summary>
         /// <param name="sender">The server we disconnected from.</param>
         /// <param name="e">Event arguments.</param>
-        static void Disconnected(object sender, EventArgs e)
+        static void Disconnected(object sender, ClientDisconnectedEventArgs e)
         {
-            Core.Log("*** Disconnected from peer", false);
-        }
-
-        /// <summary>
-        /// Client event for when we receive data from the server.
-        /// </summary>
-        /// <param name="sender">The server we received data from.</param>
-        /// <param name="e">Event arguments.</param>
-        static void DataReceived(object sender, DataReceivedEventArgs e)
-        {
-            Core.Log("[" + e.IpPort + "] " + Encoding.UTF8.GetString(e.Data), false);
+            Core.Log("*** Disconnected from the NetworkServer [" + e.IpPort + "] for the reason: " + e.Reason.ToString(), false);
         }
     }
 }

@@ -27,7 +27,7 @@ namespace alyx_multiplayer
             {
                 string PosXstr = pos.X.ToString(invariantCulture);
                 string PosYstr = pos.Y.ToString(invariantCulture);
-                string PosZstr = (pos.Z+zOffset).ToString(invariantCulture);
+                string PosZstr = (pos.Z + zOffset).ToString(invariantCulture);
                 string PosVectorStr = PosXstr + "," + PosYstr + "," + PosZstr;
 
                 string AngXstr = ang.X.ToString(invariantCulture);
@@ -36,14 +36,15 @@ namespace alyx_multiplayer
                 string AngVectorStr = AngXstr + "," + AngYstr + "," + AngZstr;
 
                 System.IO.File.WriteAllText(scriptPath + avatarScriptName, "Entities:FindByName(nil, \"" + entPrefix + avatarEntityName + "\"):SetOrigin(Vector(" + PosVectorStr + "));\n" +
-                "Entities:FindByName(nil, \"" + entPrefix + avatarEntityName + "\"):SetAngles(" + AngVectorStr + ")" );
-            } catch
+                "Entities:FindByName(nil, \"" + entPrefix + avatarEntityName + "\"):SetAngles(" + AngVectorStr + ")");
+            }
+            catch
             {
                 // That's fine, the file is being accessed by HL:A right now. Would normally throw System.IO.IOException.
             }
 
             WriteLocalHeadScript(scriptPath, entPrefix);
-            
+
         }
 
         /// <summary>

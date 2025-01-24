@@ -87,7 +87,8 @@ namespace alyx_multiplayer
         /// <summary>
         /// We can run our events while the UI is also running.
         /// </summary>
-        private class EventsThread {
+        private class EventsThread
+        {
             /// <summary>
             /// Run init, then update continuously.
             /// </summary>
@@ -179,7 +180,8 @@ namespace alyx_multiplayer
             try
             {
                 ip = new WebClient().DownloadString("https://api.ipify.org");
-            } catch
+            }
+            catch
             {
                 Console.WriteLine("Error in IP fetch!");
                 ip = "Error in IP fetch! Are you connected to the internet?";
@@ -215,7 +217,7 @@ namespace alyx_multiplayer
         private static void Init()
         {
             Log("Starting with default values", false);
-            
+
             Action<string, IntPtr> SigReport = (name, ptr) =>
             {
                 Console.WriteLine("[INIT] " + name + (ptr == IntPtr.Zero ? " WAS NOT FOUND" : " is 0x" + ptr.ToString("X")));
@@ -329,7 +331,8 @@ namespace alyx_multiplayer
             {
                 hasFoundPtr = false;
                 Log("Lost track of " + name + " pointer!", false);
-            } Console.WriteLine("[ENTFINDING] Can't find " + name + "'s pointer! Time spent: " + prof.ElapsedMilliseconds * 0.001f + " seconds");
+            }
+            Console.WriteLine("[ENTFINDING] Can't find " + name + "'s pointer! Time spent: " + prof.ElapsedMilliseconds * 0.001f + " seconds");
             return IntPtr.Zero;
         }
 
@@ -425,12 +428,28 @@ namespace alyx_multiplayer
             string[] unparsedCoords;
             try
             {
-                unparsedCoords = networkHandler.GetCoords().Split(',');
-            } catch (NullReferenceException)
+                string coords = networkHandler.GetCoords();
+                if (coords != null)
+                {
+                    unparsedCoords = coords.Split(',');
+                    if (unparsedCoords.Length != 2)
+                    {
+                        Console.WriteLine("Error: Malformed coords string: " + coords);
+                        unparsedCoords = new string[] { "0 0 0", "0 0 0" };
+                    }
+
+                }
+                else
+                {
+                    Console.WriteLine("Error: Received null coords");
+                    unparsedCoords = new string[] { "0 0 0", "0 0 0" };
+                }
+            }
+            catch (NullReferenceException)
             {
                 unparsedCoords = new string[] { "0 0 0", "0 0 0" };
             }
-            
+
             string[] unparsedPos = unparsedCoords[0].Split(' ');
             string[] unparsedAng = unparsedCoords[1].Split(' ');
 
